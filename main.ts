@@ -87,12 +87,14 @@ export default class SvgPastePlugin extends Plugin {
 
 		//method4: get svgData using navigator.read method
 		try {
-			const items = await navigator.clipboard.read();
-			const svgItem = items.find(item => item.types.includes("image/svg"));
+			const clipboardItems = await navigator.clipboard.read();
 
-			if (svgItem) {
-				const blob = await svgItem.getType("image/svg+xml");
-
+			for (const clipboardItem of clipboardItems) {
+			  for (const type of clipboardItem.types) {
+				console.log(type);
+				if( !type.includes("image/svg") ) continue;
+				const blob = await clipboardItem.getType(type);
+				// we can now use blob here
 				const reader = new FileReader();
 				reader.onloadend = () => {
 					const svgData = reader.result as string;
